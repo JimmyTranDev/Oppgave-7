@@ -19,14 +19,13 @@ public class Board {
     Board() {
         // Initialize frame
         this.frame = new JFrame();
-        this.frame.setLayout(new GridLayout(2, 2));
+        this.frame.setLayout(new GridLayout(2, 4));
 
         // Stop button
         this.stopButton = new JButton("Stop");
         this.stopButton.addActionListener(e -> {
             this.frame.dispose();
         });
-        // this.lengthPanel.add(lengthLabel);
 
         // Text Label
         this.lengthPanel = new JPanel();
@@ -40,7 +39,7 @@ public class Board {
         this.eastButton = new JButton("EAST");
         this.westButton = new JButton("WEST");
 
-        Trad trad = new Trad(this.ruter);
+        Trad trad = new Trad(this.ruter, this.lengthLabel);
 
         // Event listner
         this.northButton.addActionListener(e -> {
@@ -82,16 +81,12 @@ public class Board {
         this.frame.add(this.lengthPanel);
         this.frame.add(this.movePanel);
         this.frame.add(this.stopButton);
-        this.frame.add(this.rutePanel, 2, 2);
+        this.frame.add(this.rutePanel);
+
         this.frame.setSize(500, 500);
         this.frame.setVisible(true);
 
         trad.run();
     }
 
-    // private static void createButton(String name, JFrame frame) {
-    // JButton button = new JButton(name);
-    // button.setBounds(130, 100, 100, 40);
-    // frame.add(button);
-    // }
 }

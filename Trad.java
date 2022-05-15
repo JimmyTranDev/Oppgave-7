@@ -6,6 +6,7 @@ import java.util.Random;
 
 public class Trad extends Thread {
     JLabel[][] ruter;
+    JLabel lengthLabel;
     public String retning = "N";
     HashMap<String, int[]> treasureDict = new HashMap<>();
     Random rand = new Random();
@@ -19,21 +20,28 @@ public class Trad extends Thread {
 
         while (true) {
             try {
-                Thread.sleep(1000);
+                int compensatedCount = 1000 - (this.slange.size() * 10);
+                if (compensatedCount > 0) {
+                    Thread.sleep(compensatedCount);
+                } else {
+                    Thread.sleep(50);
+                }
+
                 this.updateSnake(this.retning);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 break;
             }
         }
     }
 
-    public Trad(JLabel[][] ruter) {
+    public Trad(JLabel[][] ruter, JLabel lengthLabel) {
         this.ruter = ruter;
+        this.lengthLabel = lengthLabel;
     }
 
     public void setDirection(String retning) {
         if (this.retning == retning) {
-
         } else {
             this.retning = retning;
         }
@@ -44,33 +52,17 @@ public class Trad extends Thread {
         this.ruter[6][6].setText("O");
         this.ruter[6][6].setBackground(Color.green);
         this.slange.addLast(arr);
-
-        // int[] arr2 = { 5, 6 };
-        // this.ruter[5][6].setText("+");
-        // this.ruter[5][6].setBackground(Color.green);
-        // this.slange.addLast(arr2);
     }
 
     public void updateSnake(String retning) throws InterruptedException {
-        // @Todo cant go back on self
-        // @Todo length count
-        // @Todo handle corner and eat self
-
         int[] forrigeRute = new int[2];
         Boolean isEatingTreasure = false;
         for (int i = 0; i < this.slange.size(); i++) {
-            System.out.println(i);
             int[] slangeDel = this.slange.get(i);
             JLabel rute = this.ruter[slangeDel[0]][slangeDel[1]];
 
             if (i == 0) {
-                if (slangeDel[0] > 12 || slangeDel[1] > 12 || slangeDel[0] < 0 || slangeDel[1] < 0) {
-                    throw new InterruptedException("Out");
-                }
-
-                rute.setText("");
-                rute.setBackground(Color.white);
-                forrigeRute = slangeDel.clone();
+                int[] holder = slangeDel.clone();
 
                 switch (this.retning) {
                     case "N":
@@ -93,20 +85,23 @@ public class Trad extends Thread {
                         break;
                 }
 
-                rute = this.ruter[slangeDel[0]][slangeDel[1]];
-                isEatingTreasure = rute.getText() == "$";
-                if (rute.getText() == "+") {
-                    throw new InterruptedException("Invalid");
+                if (slangeDel[0] > 11 || slangeDel[1] > 11 || slangeDel[0] < 0 || slangeDel[1] < 0) {
+                    throw new InterruptedException("Out");
                 }
 
-                rute.setText("O");
-                rute.setBackground(Color.green);
-                rute.setForeground(Color.black);
-            } else {
-                System.out.println(String.format("%d,%d",
-                        slangeDel[0],
-                        slangeDel[1]));
+                JLabel nyRute = this.ruter[slangeDel[0]][slangeDel[1]];
+                isEatingTreasure = nyRute.getText() == "$";
+                if (nyRute.getText() == "+") {
+                    throw new InterruptedException("Invalid");
+                }
+                nyRute.setText("O");
+                nyRute.setBackground(Color.green);
+                nyRute.setForeground(Color.black);
 
+                rute.setText("");
+                rute.setBackground(Color.white);
+                forrigeRute = holder;
+            } else {
                 rute.setText("");
                 rute.setBackground(Color.white);
                 int[] holder = slangeDel.clone();
@@ -128,6 +123,7 @@ public class Trad extends Thread {
             rute.setText("+");
             rute.setBackground(Color.green);
             this.slange.addLast(forrigeRute);
+            this.lengthLabel.setText(String.format("%d Length", slange.size()));
         }
     }
 
