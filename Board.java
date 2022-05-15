@@ -1,8 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Random;
 
 public class Board {
     JFrame frame;
@@ -17,8 +15,6 @@ public class Board {
     int slangeLengde;
     JLabel[][] ruter = new JLabel[12][12];
     JLabel lengthLabel;
-    Random rand = new Random();
-    HashMap<String, int[]> treasureDict = new HashMap<>();
 
     Board() {
         // Initialize frame
@@ -43,6 +39,26 @@ public class Board {
         this.southButton = new JButton("SOUTH");
         this.eastButton = new JButton("EAST");
         this.westButton = new JButton("WEST");
+
+        Trad trad = new Trad(this.ruter);
+
+        // Event listner
+        this.northButton.addActionListener(e -> {
+            trad.setDirection("N");
+        });
+
+        this.southButton.addActionListener(e -> {
+            trad.setDirection("S");
+        });
+
+        this.eastButton.addActionListener(e -> {
+            trad.setDirection("E");
+        });
+
+        this.westButton.addActionListener(e -> {
+            trad.setDirection("W");
+        });
+
         this.movePanel.add(this.northButton, BorderLayout.NORTH);
         this.movePanel.add(this.southButton, BorderLayout.SOUTH);
         this.movePanel.add(this.eastButton, BorderLayout.EAST);
@@ -62,15 +78,6 @@ public class Board {
             }
         }
 
-        // Starting head
-        this.ruter[6][6].setText("O");
-        this.ruter[6][6].setBackground(Color.green);
-
-        // Generate Treasure
-        fillTreasure();
-
-        // this.rutePanel.setBackground(Color.green);
-
         // Add panels and show frame
         this.frame.add(this.lengthPanel);
         this.frame.add(this.movePanel);
@@ -78,27 +85,8 @@ public class Board {
         this.frame.add(this.rutePanel, 2, 2);
         this.frame.setSize(500, 500);
         this.frame.setVisible(true);
-    }
 
-    private void fillTreasure() {
-        while (treasureDict.size() < 10) {
-            int row = rand.nextInt(12);
-            int column = rand.nextInt(12);
-            String newKey = String.format("%d,%d", row, column);
-
-            for (String key : treasureDict.keySet()) {
-                if (newKey == key) {
-                    continue;
-                }
-            }
-
-            JLabel rute = this.ruter[row][column];
-            rute.setText("$");
-            rute.setBackground(Color.green);
-
-            int[] value = new int[] { row, column };
-            treasureDict.put(newKey, value);
-        }
+        trad.run();
     }
 
     // private static void createButton(String name, JFrame frame) {
